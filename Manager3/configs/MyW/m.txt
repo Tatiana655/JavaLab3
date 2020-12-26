@@ -1,0 +1,8 @@
+EXECUTORNAME=IavorukExecutor-IavorukExecutor
+READERNAME=IavorukReader
+WRITERNAME=mekhails.writer.ByteWriter
+CFGREADER=configs\MyW\r.txt
+CFGWRITER=configs\MyW\w.txt
+CFGEXECUTOR=configs\MyW\e.txt-configs\MyW\e1.txt
+INFILE=configs\MyW\123.txt
+OUTFILE=configs\MyW\out.txt
