@@ -37,23 +37,39 @@ public class IavorukReader implements IReader {
     class MediatorShort implements IMediator
     {
         public short[] getData() {
-            if (byteStream == null) return null;
-            byte[] buff = byteStream.clone();
-            short[] shorts = new short[buff.length/2];
-            // to turn bytes to shorts as either big endian or little endian.
-            ByteBuffer.wrap(buff).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(shorts);
-            //short[] s = ByteBuffer.wrap(buff).getShort();
-            return shorts;
+            if (IavorukReader.this.byteStream!= null && IavorukReader.this.byteStream.length % 2 == 0) {
+                short[] res = new short[IavorukReader.this.byteStream.length / 2];
+                ByteBuffer byteBuffer = ByteBuffer.wrap(IavorukReader.this.byteStream);
+
+                for(int i = 0; i < res.length; ++i) {
+                    res[i] = byteBuffer.getShort(2 * i);
+                }
+
+                return res;
+            } else {
+                return null;
+            }
         }
     }
 
     class  MediatorChar implements IMediator
     {
         public char[] getData() {
-            if (byteStream == null) return null;
-            byte[] buff = byteStream.clone();
-            String readable = Arrays.toString(buff);
-            return readable.toCharArray();
+            if (IavorukReader.this.byteStream == null) {
+                return null;
+            } else {
+                char[] res = new char[IavorukReader.this.byteStream.length / 2 + IavorukReader.this.byteStream.length % 2];
+
+                for(int i = 0; i < IavorukReader.this.byteStream.length / 2; ++i) {
+                    res[i] = (char)(((IavorukReader.this.byteStream[2 * i] & 255) << 8) + (IavorukReader.this.byteStream[2 * i + 1] & 255));
+                }
+
+                if (IavorukReader.this.byteStream.length % 2 == 1) {
+                    res[IavorukReader.this.byteStream.length / 2] = (char)((IavorukReader.this.byteStream[IavorukReader.this.byteStream.length - 1] & 255) << 8);
+                }
+
+                return res;
+            }
         }
     }
 
