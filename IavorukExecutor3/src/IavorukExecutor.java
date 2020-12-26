@@ -39,13 +39,18 @@ public class IavorukExecutor implements ru.spbstu.pipeline.IExecutor {
     class MediatorShort implements IMediator
     {
         public short[] getData() {
-            if (dataBuf == null) return null;
-            byte[] buff = dataBuf.clone();
-            short[] shorts = new short[buff.length/2];
-            // to turn bytes to shorts as either big endian or little endian.
-            ByteBuffer.wrap(buff).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(shorts);
-            //short[] s = ByteBuffer.wrap(buff).getShort();
-            return shorts;
+            if (dataBuf != null && dataBuf.length % 2 == 0) {
+                short[] res = new short[dataBuf.length / 2];
+                ByteBuffer byteBuffer = ByteBuffer.wrap(dataBuf);
+
+                for(int i = 0; i < res.length; ++i) {
+                    res[i] = byteBuffer.getShort(2 * i);
+                }
+
+                return res;
+            } else {
+                return null;
+            }
         }
     }
 
@@ -53,9 +58,18 @@ public class IavorukExecutor implements ru.spbstu.pipeline.IExecutor {
     {
         public char[] getData() {
             if (dataBuf == null) return null;
+            char[] res = new char[dataBuf.length/2 + dataBuf.length%2];
+            for (int i =0; i< dataBuf.length/2;i++)
+            {
+                res[i]=(char)(((dataBuf[2*i]&255)<<8)+ (dataBuf[2*i+1]&255));
+            }
+            if (dataBuf.length % 2== 1)
+                res[dataBuf.length / 2] = (char)((dataBuf[dataBuf.length-1]&255)<<8);
+            return res;
+            /*
             byte[] buff = dataBuf.clone();
             String readable = Arrays.toString(buff);
-            return readable.toCharArray();
+            return readable.toCharArray();*/
         }
     }
     public RC setConfig(String var1) {
@@ -97,26 +111,18 @@ public class IavorukExecutor implements ru.spbstu.pipeline.IExecutor {
     public byte shift(byte oneByte) {
         int count =Integer.parseInt(param.get(Param.COUNTB.getStringParam()));/*Integer.parseInt(param.get("COUNTB")) % 8*/
         if (count == 0) return oneByte;
-        byte sym = oneByte;
-        byte sym1 = oneByte;
         //right shift
         if (count > 0) {
-            //сдвиг вправо с зануленим того, что там было
-            //System.out.println(String.format("b>>> %8s", Integer.toBinaryString(sym & 0xFF)).replace(' ', '0'));
-            sym = (byte) (sym >>> count);
-            //System.out.println(String.format(">>> %8s", Integer.toBinaryString(sym & 0xFF)).replace(' ', '0'));
-            //сдвиг влево содержимого
-            sym1 = (byte) ((sym1 << (BYTE_SIZE - count)) );
+            int x = oneByte & 0xFF;
+            int y = count % BYTE_SIZE;
+            return (byte) ((x >> y) | (x << (BYTE_SIZE - y)));
         }
         //left shift
         else {
-            count = -count;
-            //сдвиг влево с зануленим(*без него) того, что там было
-            sym = (byte) ((sym << count) );
-            //сдвиг вправо содержимого
-            sym1 = (byte) ((sym1 >>> (BYTE_SIZE - count)) & (ONES >>> (BYTE_SIZE - count - 1)));
+            int x = oneByte & 0xFF;
+            int y = -1 * count % BYTE_SIZE;
+            return (byte) ((x << y) | (x >> (BYTE_SIZE - y)));
         }
-        return (byte) (sym1 | sym);
     }
     public byte[] shiftAllBytes(byte[] oldBytes) {
         if (oldBytes == null) return null;
