@@ -66,12 +66,11 @@ public class IavorukWriter implements ru.spbstu.pipeline.IWriter {
     }
     public RC execute()
     {
-
-
         byte[] var1 = (byte[]) med.getData();
         if (var1==null) {
             try {
-                fileOutputStream.write(buffer,0,buffer.length);
+                if (buffer[0]!=(byte)0)
+                    fileOutputStream.write(buffer,0,buffer.length);
             } catch (IOException e) {
                 return RC.CODE_FAILED_TO_WRITE;
             }
