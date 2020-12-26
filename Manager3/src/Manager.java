@@ -92,7 +92,11 @@ public class Manager implements IConfigurable {
         for(IExecutor i : executors)
         {
             rc = i.setConfig(tmpCfg[k]);
-            if (rc != RC.CODE_SUCCESS) {log.info(rc.name()); return rc; };
+            if (rc != RC.CODE_SUCCESS)
+            {
+                log.info(rc.name());
+                return rc;
+            };
             k++;
         }
         //setinputstream
