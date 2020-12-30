@@ -1,0 +1,8 @@
+EXECUTORNAME=IavorukExecutor-IavorukExecutor-mekhails.executor.Reverser-mekhails.executor.Reverser-mekhails.executor.Reverser
+READERNAME=IavorukReader
+WRITERNAME=IavorukWriter
+CFGREADER=configs\My+E\r.txt
+CFGWRITER=configs\My+E\w.txt
+CFGEXECUTOR=configs\My+E\e.txt-configs\My+E\e1.txt-configs\My+E\reverserConfig_1.txt-configs\My+E\reverserConfig_2.txt-configs\My+E\reverserConfig_3.txt
+INFILE=configs\My+E\123.txt
+OUTFILE=configs\My+E\out.txt
